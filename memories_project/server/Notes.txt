@@ -1,0 +1,6 @@
+npm install body-parse cors express mongoose nodemon
+
+-- client 
+npm install axios moment react-files-base64 redux redux-thunk
+
+-- To use import in node js we need to go to package json and add "type":"module"
