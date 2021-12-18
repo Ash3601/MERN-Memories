@@ -3,12 +3,13 @@ import mongoose from "mongoose";
 const postSchema = mongoose.Schema({
   title: String,
   message: String,
-  creator: String,
+  creatorId: String, // since this is going to be an id
+  creatorName: String, // thus we have to specify a name property
   tags: [String],
   selectedFiles: String,
-  likeCount: {
-    type: Number,
-    default: 0,
+  likes: {
+    type: [String], // array of ids
+    default: [],
   },
   createdAt: { type: Date, default: new Date() },
 });

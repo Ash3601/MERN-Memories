@@ -9,7 +9,6 @@ const Posts = ({ setCurrentId, setError }) => {
 
   const posts = useSelector((state) => state.posts);
   const classes = useStyles();
-  console.log("Posts are below", posts);
   setTimeout(() => {
     if (posts.length === 0) {
       setFetchError(true);

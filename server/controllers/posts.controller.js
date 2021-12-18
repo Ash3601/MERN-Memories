@@ -11,7 +11,11 @@ export const getPosts = async (req, res) => {
 
 export const createPosts = async (req, res) => {
   const post = req.body;
-  const newPost = new PostMessage(post);
+  const newPost = new PostMessage({
+    ...post,
+    creatorId: req.userId,
+    createdAt: new Date().toISOString(),
+  });
   try {
     await newPost.save();
     res.status(200).json(newPost);
@@ -36,19 +40,35 @@ export const updatePost = async (req, res) => {
 
 export const likePost = async (req, res) => {
   const _id = req.params.id;
+  //? Since we are populating the userId in request (req) in our auth middle ware
+  //? Thus it will now be available for the use for later middlewares
+  if (!req.userId) {
+    // user not authenticated
+    return res.json({ message: "user not authenticated" });
+  }
+
   if (!mongoose.Types.ObjectId.isValid(_id)) {
     // check if the id is of type of mongoose or not
     res.status(404).send("No post with that id");
+    return;
   }
   try {
     const post = await PostMessage.findById(_id);
-    console.log("Post is ", post);
-    const updatedPost = await PostMessage.findByIdAndUpdate(
-      _id,
-      { likeCount: post.likeCount + 1 },
-      { new: true },
-    );
-    console.log("Sending the updated post to the client", updatedPost);
+    const index = post.likes.findIndex((id) => {
+      return id === String(req.userId);
+    });
+    // if not already liked
+    if (index === -1) {
+      // like the post
+      post.likes.push(req.userId);
+    } else {
+      // already likes?
+      // dislike a post
+      post.likes = post.likes.filter((id) => id !== String(req.userId));
+    }
+    const updatedPost = await PostMessage.findByIdAndUpdate(_id, post, {
+      new: true,
+    });
     res.status(200).json(updatedPost);
   } catch (error) {
     console.log("Server Error: Like Post", error);
