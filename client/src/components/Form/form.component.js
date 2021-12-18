@@ -134,6 +134,18 @@ const Form = ({ currentId, setCurrentId, setError }) => {
           variant="contained"
           onClick={clear}
           fullWidth
+          disabled={
+            JSON.stringify(postData) ===
+            JSON.stringify({
+              // creator: "",
+              title: "",
+              message: "",
+              tags: "",
+              selectedFiles: "",
+            })
+              ? true
+              : false
+          }
         >
           Clear
         </Button>
